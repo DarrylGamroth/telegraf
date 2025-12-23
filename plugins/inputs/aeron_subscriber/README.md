@@ -1,21 +1,32 @@
 # Aeron Subscriber Input Plugin
 
-The Aeron subscriber input plugin subscribes to Aeron streams and converts incoming messages to Telegraf metrics using configurable data formats.
+The Aeron subscriber input plugin subscribes to Aeron streams and
+converts incoming messages to Telegraf metrics using configurable data
+formats.
 
-[Aeron](https://github.com/real-logic/aeron) is a low-latency, high-throughput messaging system designed for financial trading and other performance-critical applications. This plugin uses the [aeron-go](https://github.com/lirm/aeron-go) library to consume Aeron messages.
+[Aeron](https://github.com/real-logic/aeron) is a low-latency,
+high-throughput messaging system designed for financial trading and
+other performance-critical applications. This plugin uses the
+[aeron-go](https://github.com/lirm/aeron-go) library to consume Aeron
+messages.
 
 ## Features
 
 - Subscribe to UDP, IPC, or other Aeron transport channels
 - Support for message fragmentation and reassembly via FragmentAssembler
 - Configurable idle strategies for performance optimization
-- Parser integration for various data formats (InfluxDB line protocol, JSON, CSV, etc.)
+- Parser integration for various data formats (InfluxDB line protocol,
+  JSON, CSV, etc.)
 - Multiple subscription support via separate plugin instances
 - Graceful shutdown and resource cleanup
 
 ## Global configuration options <!-- @/docs/includes/plugin_config.md -->
 
-In addition to the plugin-specific configuration settings, plugins support additional global and plugin configuration settings. These settings are used to modify metrics, tags, and field or create aliases and configure ordering, etc. See the [CONFIGURATION.md][CONFIGURATION.md] for more details.
+In addition to the plugin-specific configuration settings, plugins
+support additional global and plugin configuration settings. These
+settings are used to modify metrics, tags, and field or create aliases
+and configure ordering, etc. See the
+[CONFIGURATION.md][CONFIGURATION.md] for more details.
 
 [CONFIGURATION.md]: ../../../docs/CONFIGURATION.md
 
@@ -75,26 +86,36 @@ In addition to the plugin-specific configuration settings, plugins support addit
 
 ### Required Parameters
 
-- **`channel`** (string): The Aeron channel URI to subscribe to. Supports UDP and IPC transports.
-- **`stream_id`** (int32): The stream ID to subscribe to on the specified channel.
-- **`data_format`** (string): The data format for parsing incoming messages.
+- **`channel`** (string): The Aeron channel URI to subscribe to. Supports
+  UDP and IPC transports.
+- **`stream_id`** (int32): The stream ID to subscribe to on the specified
+  channel.
+- **`data_format`** (string): The data format for parsing incoming
+  messages.
 
 ### Optional Parameters
 
-- **`aeron_dir`** (string): Directory where Aeron driver files are stored. Defaults to system temp directory.
-- **`driver_timeout`** (duration): Timeout for establishing connection to Aeron media driver. Default: `30s`.
-- **`fragment_limit`** (int): Maximum number of fragments to process per polling cycle. Higher values improve throughput but may increase latency. Default: `10`.
-- **`idle_strategy`** (string): Strategy to use when no messages are available. Options:
+- **`aeron_dir`** (string): Directory where Aeron driver files are stored.
+  Defaults to system temp directory.
+- **`driver_timeout`** (duration): Timeout for establishing connection to
+  Aeron media driver. Default: `30s`.
+- **`fragment_limit`** (int): Maximum number of fragments to process per
+  polling cycle. Higher values improve throughput but may increase
+  latency. Default: `10`.
+- **`idle_strategy`** (string): Strategy to use when no messages are
+  available. Options:
   - `"sleeping"`: Sleep for configured duration (lowest CPU usage)
   - `"yielding"`: Yield to other goroutines using `runtime.Gosched()`
   - `"busy"`: Busy wait (highest CPU usage, lowest latency)
   - `"backoff"`: Adaptive backoff strategy (balanced approach)
   Default: `"sleeping"`.
-- **`idle_sleep_duration`** (duration): Sleep duration when using "sleeping" idle strategy. Default: `1ms`.
+- **`idle_sleep_duration`** (duration): Sleep duration when using
+  "sleeping" idle strategy. Default: `1ms`.
 
 ## Performance Tuning
 
 ### High Throughput Configuration
+
 ```toml
 [[inputs.aeron_subscriber]]
   channel = "aeron:udp?endpoint=localhost:40123"
@@ -105,11 +126,12 @@ In addition to the plugin-specific configuration settings, plugins support addit
 ```
 
 ### Low Resource Configuration
+
 ```toml
 [[inputs.aeron_subscriber]]
   channel = "aeron:udp?endpoint=localhost:40123"
   stream_id = 10
-  fragment_limit = 5        # Process fewer fragments per cycle
+  fragment_limit = 5           # Process fewer fragments per cycle
   idle_strategy = "sleeping"
   idle_sleep_duration = "5ms"  # Longer sleep for lower CPU usage
   data_format = "influx"
@@ -118,20 +140,27 @@ In addition to the plugin-specific configuration settings, plugins support addit
 ## Example Output
 
 With InfluxDB line protocol data format:
-```
-cpu,host=server01 usage_idle=99.5,usage_user=0.3,usage_system=0.2 1609459200000000000
-memory,host=server01 used_percent=45.2,available_bytes=8589934592 1609459200000000000
+
+```text
+cpu,host=server01 usage_idle=99.5,usage_user=0.3,usage_system=0.2 \
+1609459200000000000
+memory,host=server01 used_percent=45.2,available_bytes=8589934592 \
+1609459200000000000
 ```
 
 With JSON data format parsing trading data:
-```
-trade,symbol=EURUSD,side=buy price=1.2345,quantity=1000000,timestamp=1609459200000 1609459200000000000
-trade,symbol=GBPUSD,side=sell price=1.3678,quantity=500000,timestamp=1609459200001 1609459200001000000
+
+```text
+trade,symbol=EURUSD,side=buy price=1.2345,quantity=1000000,\
+timestamp=1609459200000 1609459200000000000
+trade,symbol=GBPUSD,side=sell price=1.3678,quantity=500000,\
+timestamp=1609459200001 1609459200001000000
 ```
 
 ## Multiple Subscriptions
 
-You can configure multiple Aeron subscriptions by defining multiple plugin instances:
+You can configure multiple Aeron subscriptions by defining multiple
+plugin instances:
 
 ```toml
 # Trading data stream
@@ -140,17 +169,17 @@ You can configure multiple Aeron subscriptions by defining multiple plugin insta
   stream_id = 10
   data_format = "json"
   fragment_limit = 50
-  
+
   [inputs.aeron_subscriber.tags]
     source = "trading"
 
-# Market data stream  
+# Market data stream
 [[inputs.aeron_subscriber]]
   channel = "aeron:udp?endpoint=192.168.1.100:40124"
   stream_id = 11
   data_format = "influx"
   fragment_limit = 100
-  
+
   [inputs.aeron_subscriber.tags]
     source = "market_data"
 ```
@@ -159,9 +188,11 @@ You can configure multiple Aeron subscriptions by defining multiple plugin insta
 
 The plugin handles various error conditions gracefully:
 
-- **Connection failures**: Plugin retries connection to Aeron media driver
+- **Connection failures**: Plugin retries connection to Aeron media
+  driver
 - **Message parsing errors**: Invalid messages are logged and skipped
-- **Network issues**: Temporary network problems are handled by Aeron's built-in reliability
+- **Network issues**: Temporary network problems are handled by Aeron's
+  built-in reliability
 
 ## Requirements
 
@@ -172,4 +203,5 @@ The plugin handles various error conditions gracefully:
 
 ## Dependencies
 
-This plugin uses the [aeron-go](https://github.com/lirm/aeron-go) library, which provides Go bindings for the Aeron messaging system.
+This plugin uses the [aeron-go](https://github.com/lirm/aeron-go)
+library, which provides Go bindings for the Aeron messaging system.
