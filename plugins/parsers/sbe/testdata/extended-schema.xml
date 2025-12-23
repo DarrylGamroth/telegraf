@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sbe:messageSchema xmlns:sbe="http://fixprotocol.io/2016/sbe"
+                   package="test"
+                   id="1"
+                   version="0"
+                   semanticVersion="1.0"
+                   byteOrder="littleEndian">
+    <types>
+        <composite name="messageHeader" description="Message identifiers and length of message root.">
+            <type name="blockLength" primitiveType="uint16"/>
+            <type name="templateId" primitiveType="uint16"/>
+            <type name="schemaId" primitiveType="uint16"/>
+            <type name="version" primitiveType="uint16"/>
+        </composite>
+        <composite name="groupSizeEncoding" description="Repeating group dimensions.">
+            <type name="blockLength" primitiveType="uint16"/>
+            <type name="numInGroup" primitiveType="uint16"/>
+        </composite>
+        <composite name="varDataEncoding" description="Variable length binary blob.">
+            <type name="length" primitiveType="uint32" maxValue="1073741824"/>
+            <type name="varData" primitiveType="uint8" length="0"/>
+        </composite>
+        <composite name="Point">
+            <type name="x" primitiveType="int16"/>
+            <type name="y" primitiveType="int16"/>
+        </composite>
+        <enum name="Status" encodingType="uint16">
+            <validValue name="OK">1</validValue>
+            <validValue name="WARN">2</validValue>
+        </enum>
+    </types>
+    <sbe:message name="Sample" id="1">
+        <field name="id" id="1" type="uint32" offset="0"/>
+        <field name="status" id="2" type="Status" offset="4"/>
+        <field name="point" id="3" type="Point" offset="6"/>
+        <group name="readings" id="4" dimensionType="groupSizeEncoding">
+            <field name="speed" id="5" type="uint16"/>
+        </group>
+        <data name="note" id="6" type="varDataEncoding"/>
+    </sbe:message>
+</sbe:messageSchema>
