@@ -47,6 +47,7 @@ Add the following to your `telegraf.conf`:
   `[index]` for group elements.
 
 ## Example: Using
+
 [`example-schema.xml`](https://github.com/real-logic/simple-binary-encoding/blob/master/sbe-samples/src/main/resources/example-schema.xml)
 
 Suppose you use the example schema from the SBE repo, which defines a
