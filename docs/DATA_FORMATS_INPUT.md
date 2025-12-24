@@ -23,6 +23,7 @@ Protocol, JSON format, or Apache Avro format.
 - [Parquet](/plugins/parsers/parquet)
 - [Prometheus](/plugins/parsers/prometheus)
 - [PrometheusRemoteWrite](/plugins/parsers/prometheusremotewrite)
+- [SBE](/plugins/parsers/sbe)
 - [Value](/plugins/parsers/value), ie: 45 or "booyah"
 - [Wavefront](/plugins/parsers/wavefront)
 - [XPath](/plugins/parsers/xpath) (supports XML, JSON, MessagePack, Protocol Buffers)
