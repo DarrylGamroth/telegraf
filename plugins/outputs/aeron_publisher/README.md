@@ -19,7 +19,7 @@ various serialization formats.
 
 ## Configuration
 
-```toml
+```toml @sample.conf
 [[outputs.aeron_publisher]]
   ## Aeron directory (defaults to system temp + /aeron-<user>)
   # aeron_dir = "/tmp/aeron-user"

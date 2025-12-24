@@ -17,7 +17,7 @@ and configure ordering, etc. See the
 
 ## Configuration
 
-```toml
+```toml @sample.conf
 [[inputs.aeron_stat]]
   ## Aeron directory path where CnC files are located
   ## Default: system default (usually /dev/shm/aeron or /tmp/aeron)
