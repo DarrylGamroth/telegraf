@@ -5,12 +5,14 @@ This document provides practical examples of using the Aeron Stat input plugin.
 ## Basic Configuration
 
 ### Minimal Setup
+
 ```toml
 [[inputs.aeron_stat]]
   # Uses default aeron directory and 5s read timeout
 ```
 
 ### Custom Directory
+
 ```toml
 [[inputs.aeron_stat]]
   aeron_dir = "/dev/shm/my-aeron"
@@ -18,11 +20,12 @@ This document provides practical examples of using the Aeron Stat input plugin.
 ```
 
 ### With Custom Tags
+
 ```toml
 [[inputs.aeron_stat]]
   aeron_dir = "/opt/aeron/data"
   read_timeout = "2s"
-  
+
   [inputs.aeron_stat.tags]
     environment = "production"
     datacenter = "us-west-1"
@@ -32,6 +35,7 @@ This document provides practical examples of using the Aeron Stat input plugin.
 ## Complete Telegraf Configuration
 
 ### Basic Monitoring Setup
+
 ```toml
 [agent]
   interval = "10s"
@@ -40,7 +44,7 @@ This document provides practical examples of using the Aeron Stat input plugin.
 [[inputs.aeron_stat]]
   aeron_dir = "/dev/shm/aeron"
   read_timeout = "5s"
-  
+
   [inputs.aeron_stat.tags]
     environment = "production"
 
@@ -52,6 +56,7 @@ This document provides practical examples of using the Aeron Stat input plugin.
 ```
 
 ### With Filtering and Aggregation
+
 ```toml
 [agent]
   interval = "5s"
@@ -59,7 +64,7 @@ This document provides practical examples of using the Aeron Stat input plugin.
 
 [[inputs.aeron_stat]]
   aeron_dir = "/dev/shm/aeron"
-  
+
   [inputs.aeron_stat.tags]
     host = "aeron-node-1"
 
@@ -84,6 +89,7 @@ This document provides practical examples of using the Aeron Stat input plugin.
 ## Use Cases
 
 ### High-Frequency Trading Monitor
+
 ```toml
 [agent]
   interval = "1s"
@@ -92,7 +98,7 @@ This document provides practical examples of using the Aeron Stat input plugin.
 [[inputs.aeron_stat]]
   aeron_dir = "/dev/shm/aeron-hft"
   read_timeout = "500ms"
-  
+
   [inputs.aeron_stat.tags]
     trading_venue = "NYSE"
     strategy = "market_making"
@@ -109,6 +115,7 @@ This document provides practical examples of using the Aeron Stat input plugin.
 ```
 
 ### Multi-Node Cluster Monitoring
+
 ```toml
 [agent]
   interval = "10s"
@@ -116,16 +123,16 @@ This document provides practical examples of using the Aeron Stat input plugin.
 
 [[inputs.aeron_stat]]
   aeron_dir = "/opt/aeron/node1"
-  
+
   [inputs.aeron_stat.tags]
     cluster_node = "node-1"
     cluster_role = "leader"
 
 [[inputs.aeron_stat]]
   aeron_dir = "/opt/aeron/node2"
-  
+
   [inputs.aeron_stat.tags]
-    cluster_node = "node-2" 
+    cluster_node = "node-2"
     cluster_role = "follower"
 
 [[outputs.prometheus_client]]
@@ -134,6 +141,7 @@ This document provides practical examples of using the Aeron Stat input plugin.
 ```
 
 ### Development Environment
+
 ```toml
 [agent]
   interval = "30s"
@@ -143,7 +151,7 @@ This document provides practical examples of using the Aeron Stat input plugin.
 [[inputs.aeron_stat]]
   aeron_dir = "/tmp/aeron-dev"
   read_timeout = "10s"
-  
+
   [inputs.aeron_stat.tags]
     environment = "development"
     developer = "alice"
@@ -160,45 +168,51 @@ This document provides practical examples of using the Aeron Stat input plugin.
 ### InfluxDB Queries
 
 **Total bytes transferred:**
+
 ```sql
-SELECT sum("value") 
-FROM "aeron_bytes" 
-WHERE time >= now() - 1h 
+SELECT sum("value")
+FROM "aeron_bytes"
+WHERE time >= now() - 1h
 GROUP BY "counter_type"
 ```
 
 **Error rate over time:**
+
 ```sql
-SELECT mean("value") 
-FROM "aeron_flow_control" 
-WHERE "counter_type" = 'errors' 
-AND time >= now() - 1h 
+SELECT mean("value")
+FROM "aeron_flow_control"
+WHERE "counter_type" = 'errors'
+AND time >= now() - 1h
 GROUP BY time(1m)
 ```
 
 **Stream throughput:**
+
 ```sql
-SELECT derivative(mean("value"), 1s) 
-FROM "aeron_bytes" 
-WHERE "counter_type" = 'bytes_sent' 
-AND time >= now() - 5m 
+SELECT derivative(mean("value"), 1s)
+FROM "aeron_bytes"
+WHERE "counter_type" = 'bytes_sent'
+AND time >= now() - 5m
 GROUP BY "stream_id", time(10s)
 ```
 
 ### Prometheus Queries
 
 **Message rate:**
+
 ```promql
 rate(aeron_messages_value[5m])
 ```
 
 **Error ratio:**
+
 ```promql
-rate(aeron_flow_control_value{counter_type="errors"}[5m]) / 
+rate(aeron_flow_control_value{counter_type="errors"}[5m]) /
 rate(aeron_messages_value[5m])
 ```
 
 **Top streams by throughput:**
+
 ```promql
 topk(5, rate(aeron_bytes_value{counter_type="bytes_sent"}[1m]))
 ```
@@ -206,6 +220,7 @@ topk(5, rate(aeron_bytes_value{counter_type="bytes_sent"}[1m]))
 ## Troubleshooting Examples
 
 ### Debugging Connection Issues
+
 ```toml
 [agent]
   debug = true
@@ -221,6 +236,7 @@ topk(5, rate(aeron_bytes_value{counter_type="bytes_sent"}[1m]))
 ```
 
 ### Monitoring Plugin Health
+
 ```toml
 [[inputs.aeron_stat]]
   aeron_dir = "/dev/shm/aeron"
@@ -235,6 +251,7 @@ topk(5, rate(aeron_bytes_value{counter_type="bytes_sent"}[1m]))
 ```
 
 Run Telegraf with debug logging:
+
 ```bash
 ./telegraf --config aeron-debug.conf --debug
 ```
