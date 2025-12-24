@@ -112,10 +112,6 @@ extras.sunRoof=true
 - Only works with SBE messages compatible with the provided IR file.
 - Filtering is done by field name; nested fields use dot notation.
 
-## License
-
-MIT
-
 ## References
 
 - [Telegraf Parser Plugins](https://github.com/influxdata/telegraf/tree/master/plugins/parsers)
