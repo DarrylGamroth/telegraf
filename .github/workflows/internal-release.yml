@@ -27,7 +27,7 @@ jobs:
             -v "$GITHUB_WORKSPACE:/go/src/github.com/influxdata/telegraf" \
             -w /go/src/github.com/influxdata/telegraf \
             telegraf-ci \
-            bash -lc "git config --global --add safe.directory /go/src/github.com/influxdata/telegraf && make package include_packages=\"linux_amd64.tar.gz amd64.deb x86_64.rpm linux_arm64.tar.gz arm64.deb aarch64.rpm\" GOFLAGS=-buildvcs=false"
+            bash -c "git config --global --add safe.directory /go/src/github.com/influxdata/telegraf && make package include_packages=\"linux_amd64.tar.gz amd64.deb x86_64.rpm linux_arm64.tar.gz arm64.deb aarch64.rpm\" GOFLAGS=-buildvcs=false"
 
       - name: Upload release assets
         uses: softprops/action-gh-release@v2
